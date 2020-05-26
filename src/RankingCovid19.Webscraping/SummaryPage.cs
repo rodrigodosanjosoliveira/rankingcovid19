@@ -1,5 +1,5 @@
 ﻿using OpenQA.Selenium;
-using OpenQA.Selenium.Chrome;
+using OpenQA.Selenium.Firefox;
 using RankingCovid19.Domain.Entities;
 using System;
 using System.Linq;
@@ -15,10 +15,10 @@ namespace RankingCovid19.Webscraping
         {
             _configurations = configurations;
 
-            ChromeOptions options = new ChromeOptions();
+            FirefoxOptions options = new FirefoxOptions();
             options.AddArgument("--headless");
 
-            _driver = new ChromeDriver(
+            _driver = new FirefoxDriver(
                 _configurations.DriverPath,
                 options);
         }
@@ -31,13 +31,20 @@ namespace RankingCovid19.Webscraping
                 _configurations.Url);
         }
 
+        internal void Close()
+        {
+            _driver.Quit();
+            _driver = null;
+        }
+
         public Covid19Summary GetSummary()
         {
             Covid19Summary summary = new Covid19Summary();
 
             string activeCases = _driver
-                .FindElement(By.ClassName("automated-header"))
-                .FindElement(By.TagName("h1"))
+                .FindElement(By.ClassName("infoTileData"))
+                .FindElement(By.ClassName("description"))
+                .FindElement(By.ClassName("total"))
                 .Text.Split(new char[] { ' ' }).Last();
 
             //var dadosConferencias = _driver
