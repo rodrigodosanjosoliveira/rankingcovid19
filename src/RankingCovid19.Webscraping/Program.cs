@@ -1,14 +1,19 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Flurl.Http;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
+using RankingCovid19.Domain.Entities;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace RankingCovid19.Webscraping
 {
-    class Program
+    public class Program
     {
-        static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = new ConfigurationBuilder()
-                .AddJsonFile(@"appsettings.json", false);
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json");
             var configuration = builder.Build();
 
             var seleniumConfigurations = new SeleniumConfigurations();
@@ -16,14 +21,21 @@ namespace RankingCovid19.Webscraping
                 configuration.GetSection("SeleniumConfigurations"))
                     .Configure(seleniumConfigurations);
 
-            var summaryPage = new SummaryPage(
-                seleniumConfigurations);
+            var summaryPage = new SummaryPage(seleniumConfigurations);
+            var summary = summaryPage.GetSummary("brazil");
 
-            summaryPage.LoadPage();
+            var api = new ServiceApi();
+            new ConfigureFromConfigurationOptions<ServiceApi>(
+                configuration.GetSection("ServiceApi"))
+                .Configure(api);
 
-            var summary = summaryPage.GetSummary();
-
+            await SaveSummaryAsync(summary, api).ConfigureAwait(false);
             summaryPage.Close();
+        }
+
+        private static async Task SaveSummaryAsync(Covid19Summary summary, ServiceApi api)
+        {
+            await api.Endpoint.PostJsonAsync(summary);
         }
     }
 }

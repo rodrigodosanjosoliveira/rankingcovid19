@@ -18,17 +18,15 @@ namespace RankingCovid19.Webscraping
             FirefoxOptions options = new FirefoxOptions();
             options.AddArgument("--headless");
 
-            _driver = new FirefoxDriver(
-                _configurations.DriverPath,
-                options);
+            _driver = new FirefoxDriver(options);
         }
 
-        public void LoadPage()
+        public void LoadPage(string country)
         {
             _driver.Manage().Timeouts().PageLoad =
                 TimeSpan.FromSeconds(_configurations.Timeout);
             _driver.Navigate().GoToUrl(
-                _configurations.Url);
+                $"{_configurations.Url}/{country}");
         }
 
         internal void Close()
@@ -37,58 +35,31 @@ namespace RankingCovid19.Webscraping
             _driver = null;
         }
 
-        public Covid19Summary GetSummary()
+        public Covid19Summary GetSummary(string country)
         {
-            Covid19Summary summary = new Covid19Summary();
+            LoadPage(country);
 
-            string activeCases = _driver
+            var totals = _driver
+                .FindElement(By.ClassName("overview"))
+                .FindElement(By.ClassName("overviewContent"))
+                .FindElement(By.ClassName("infoTile"))
                 .FindElement(By.ClassName("infoTileData"))
-                .FindElement(By.ClassName("description"))
-                .FindElement(By.ClassName("total"))
-                .Text.Split(new char[] { ' ' }).Last();
+                .FindElements(By.ClassName("total")).Select(s => s.Text).ToList();
 
-            //var dadosConferencias = _driver
-            //    .FindElements(By.ClassName("responsive-table-wrap"));
-            //var captions = _driver
-            //    .FindElements(By.ClassName("table-caption"));
+            var position = _driver
+                .FindElement(By.ClassName("combinedArea"))
+                .FindElement(By.ClassName("areas"))
+                .FindElements(By.ClassName("areaDiv"))
+                .Select(t => t.FindElement(By.ClassName("area"))
+                .FindElement(By.ClassName("areaName")).Text).ToList();
 
-            //for (int i = 0; i < captions.Count; i++)
-            //{
-            //    var caption = captions[i];
-            //    Conferencia conferencia = new Conferencia();
-            //    conferencia.Temporada = temporada;
-            //    conferencia.DataCarga = dataCarga;
-            //    conferencia.Nome =
-            //        caption.FindElement(By.ClassName("long-caption")).Text;
-            //    conferencias.Add(conferencia);
+            var activeCases = long.Parse(totals[0].Substring(0, totals[0].IndexOf("\r")).Replace(".", ""));
+            var recoveredCases = long.Parse(totals[1].Substring(0, totals[1].IndexOf("\r")).Replace(".", ""));
+            var fatalCases = long.Parse(totals[2].Substring(0, totals[2].IndexOf("\r")).Replace(".",""));
 
-            //    int posicao = 0;
-            //    var conf = dadosConferencias[i];
-            //    var dadosEquipes = conf.FindElement(By.TagName("tbody"))
-            //        .FindElements(By.TagName("tr"));
-            //    foreach (var dadosEquipe in dadosEquipes)
-            //    {
-            //        var estatisticasEquipe =
-            //            dadosEquipe.FindElements(By.TagName("td"));
+            var covid19Summary = new Covid19Summary(country, activeCases, recoveredCases, fatalCases);
 
-            //        posicao++;
-            //        Equipe equipe = new Equipe();
-            //        equipe.Posicao = posicao;
-            //        equipe.Nome =
-            //            estatisticasEquipe[0].FindElement(
-            //                By.ClassName("team-names")).GetAttribute("innerHTML");
-            //        equipe.Vitorias = Convert.ToInt32(
-            //            estatisticasEquipe[1].Text);
-            //        equipe.Derrotas = Convert.ToInt32(
-            //            estatisticasEquipe[2].Text);
-            //        equipe.PercentualVitorias =
-            //            estatisticasEquipe[3].Text;
-
-            //        conferencia.Equipes.Add(equipe);
-            //    }
-            //}
-
-            return null;
+            return covid19Summary;
         }
 
         public void Fechar()
