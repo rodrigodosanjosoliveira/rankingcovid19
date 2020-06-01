@@ -10,7 +10,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\RankingCovid19.Application\RankingCovid19.Application.csproj" />
-    <ProjectReference Include="..\RankingCovid19.Data\RankingCovid19.Data.csproj" />
+    <ProjectReference Include="..\RankingCovid19.Crosscuting.IoC\RankingCovid19.Crosscuting.IoC.csproj" />
     <ProjectReference Include="..\RankingCovid19.Webscraping\RankingCovid19.Webscraping.csproj" />
   </ItemGroup>
 

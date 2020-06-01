@@ -4,11 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
-using RankingCovid19.Application.Services;
-using RankingCovid19.Data.Context;
-using RankingCovid19.Data.Repositories;
-using RankingCovid19.Domain.Contracts.Repositories;
-using RankingCovid19.Domain.Contracts.Services;
+using RankingCovid19.Api.Configuration;
 
 namespace RankingCovid19.Api
 {
@@ -25,9 +21,7 @@ namespace RankingCovid19.Api
         {
             services.AddCors();
 
-            services.AddTransient<ICovid19SummaryService, Covid19SummaryService>();
-            services.AddTransient<ICovid19SummaryRepository, Covid19SummaryRepository>();
-            services.AddScoped<Covid19SummaryContext>();
+            services.AddDependencyInjectionSetup();
 
             services.AddControllers();
 

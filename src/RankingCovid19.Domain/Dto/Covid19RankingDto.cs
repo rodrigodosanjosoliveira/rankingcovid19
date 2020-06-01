@@ -1,4 +1,4 @@
-﻿using RankingCovid19.Domain.Entities;
+﻿using RankingCovid19.Domain.ValueTypes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,12 +7,8 @@ using System.Runtime.Serialization;
 namespace RankingCovid19.Domain.Dto
 {
     [DataContract]
-    public class Covid19SummaryDto
+    public class Covid19RankingDto
     {
-        public Guid Id { get; set; }
-
-        [DataMember]
-        public string Country { get; set; }
         [DataMember]
         public long ActiveCases { get; set; }
         [DataMember]
@@ -20,19 +16,19 @@ namespace RankingCovid19.Domain.Dto
         [DataMember]
         public long FatalCases { get; set; }
         [DataMember]
-        public long Total { get; set; }
+        public int RankingPosition { get; set; }
 
-        public Covid19SummaryDto(Covid19Summary summary)
+        public Guid CountryId { get; set; }
+
+        public Covid19RankingDto(Covid19Ranking summary)
         {
-            Id = summary.Id;
-            Country = summary.Country;
             ActiveCases = summary.ActiveCases;
             RecoveredCases = summary.RecoveredCases;
             FatalCases = summary.FatalCases;
-            Total = summary.Total;
+            RankingPosition = summary.RankingPosition;
         }
 
-        public static List<Covid19SummaryDto> Convert(List<Covid19Summary> summaries) =>
-            summaries.Select(summary => new Covid19SummaryDto(summary)).ToList();
+        public static List<Covid19RankingDto> Convert(List<Covid19Ranking> summaries) =>
+            summaries.Select(summary => new Covid19RankingDto(summary)).ToList();
     }
 }

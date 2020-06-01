@@ -3,7 +3,7 @@ using RankingCovid19.Data.Context;
 using RankingCovid19.Domain.Contracts.Repositories;
 using RankingCovid19.Domain.Entities;
 using System;
-using System.Linq;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace RankingCovid19.Data.Repositories
@@ -32,9 +32,9 @@ namespace RankingCovid19.Data.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public IQueryable<T> GetAll()
+        public IEnumerable<T> GetAll()
         {
-            return _context.Set<T>().AsNoTracking();
+            return _context.Set<T>();
         }
 
         public async Task<T> GetById(Guid id)

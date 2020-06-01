@@ -1,6 +1,6 @@
 ﻿using RankingCovid19.Domain.Entities;
 using System;
-using System.Linq;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace RankingCovid19.Domain.Contracts.Repositories
@@ -8,7 +8,7 @@ namespace RankingCovid19.Domain.Contracts.Repositories
     public interface IRepository<T>
         where T : Entity
     {
-        IQueryable<T> GetAll();
+        IEnumerable<T> GetAll();
 
         Task<T> GetById(Guid id);
 

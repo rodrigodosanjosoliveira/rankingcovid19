@@ -13,60 +13,30 @@ namespace RankingCovid19.Api.Controllers
     [ApiController]
     public class SummaryController : ControllerBase
     {
-        private readonly ICovid19SummaryService _covid19SummaryService;
+        private readonly ICovid19RankingService _covid19RankingService;
 
-        public SummaryController(ICovid19SummaryService covid19SummaryService)
+        public SummaryController(ICovid19RankingService covid19RankingService)
         {
-            _covid19SummaryService = covid19SummaryService;
+            _covid19RankingService = covid19RankingService;
         }
 
         [HttpGet("/{country}")]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<Covid19SummaryDto>> Get(string country)
+        public ActionResult<Covid19RankingDto> Get(string country)
         {
             Error error;
-            if (string.IsNullOrEmpty(country))
+
+            var summary = _covid19RankingService.GetCountry(country);
+            if(summary != null)
+                return Ok(new CountryDto(summary));
+            error = new Error
             {
-                error = new Error
-                {
-                    Mensagem = "Parâmetro inválido",
-                    StatusCode = "400"
-                };
-                return BadRequest(error);
-            }
+                Mensagem = "Sumário não encontrado",
+                StatusCode = "404"
+            };
 
-            var summary = await _covid19SummaryService.GetCovid19Summary(country);
+            return NotFound(error);
 
-            if (summary == null)
-            {
-                error = new Error
-                {
-                    Mensagem = "Sumário não encontrado",
-                    StatusCode = "404"
-                };
-                return NotFound(error);
-            }
-
-            return Ok(new Covid19SummaryDto(summary));
-        }
-
-        [HttpPost]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status201Created)]
-        public async Task<ActionResult<Covid19SummaryDto>> Post([FromBody] string country)
-        {
-            if (string.IsNullOrEmpty(country))
-                return BadRequest(new Error
-                {
-                    Mensagem = "Parâmetros inválidos",
-                    StatusCode = "400"
-                });
-
-            //var summaryPage = new RankingCovid19.Webscraping.SummaryPage() 
-
-            //var summary =
-            return null;
         }
     }
 }
