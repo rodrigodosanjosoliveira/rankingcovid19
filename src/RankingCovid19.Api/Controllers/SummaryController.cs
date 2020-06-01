@@ -20,6 +20,12 @@ namespace RankingCovid19.Api.Controllers
             _covid19RankingService = covid19RankingService;
         }
 
+        /// <summary>
+        /// Obtém informações sobre números da Covid-19 em um país
+        /// </summary>
+        /// <param name="country">País pesquisado</param>
+        /// <returns>Informações de ranking e números sobre a pandemia no país</returns>
+        /// <see cref="Covid19RankingDto"/>
         [HttpGet("/{country}")]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public ActionResult<Covid19RankingDto> Get(string country)

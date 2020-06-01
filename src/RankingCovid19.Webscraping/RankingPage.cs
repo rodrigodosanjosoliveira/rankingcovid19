@@ -3,6 +3,7 @@ using OpenQA.Selenium.Firefox;
 using OpenQA.Selenium.Interactions;
 using RankingCovid19.Domain.Dto;
 using RankingCovid19.Domain.ValueTypes;
+using RankingCovid19.Webscraping.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,11 +36,6 @@ namespace RankingCovid19.Webscraping
         {
             _driver.Quit();
             _driver = null;
-        }
-
-        public void ScrollDown()
-        {
-            ((IJavaScriptExecutor)_driver).ExecuteScript("scroll(0,450);");
         }
 
         public List<CountryInputDto> LoadRanking()

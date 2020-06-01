@@ -1,4 +1,4 @@
-﻿namespace RankingCovid19.Webscraping
+﻿namespace RankingCovid19.Webscraping.Configuration
 {
     public class SeleniumConfigurations
     {
